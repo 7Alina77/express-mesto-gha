@@ -1,9 +1,10 @@
 const User = require('../models/user');
+const handleErrors = require('../errors/handleErrors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(err => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch(err => handleErrors(err, res));
 };
 
 module.exports.getUser = (req, res) => {
@@ -15,7 +16,7 @@ module.exports.getUser = (req, res) => {
       res.send(user);
       return;
     })
-    .catch(err => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch(err => handleErrors(err, res));
 };
 
 module.exports.createUser = (req, res) => {
@@ -23,5 +24,33 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch(err => handleErrors(err, res));
+};
+
+module.exports.updateUser = (req, res) => {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
+    .then((user) => {
+      res.send({
+        _id: user._id,
+        avatar: user.avatar,
+        name,
+        about,
+      });
+    })
+    .catch(err => handleErrors(err, res));
+};
+
+module.exports.updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
+    .then((user) => {
+      res.send({
+        _id: user._id,
+        avatar,
+        name: user.name,
+        about: user.about,
+      });
+    })
+    .catch(err => handleErrors(err, res));
 };

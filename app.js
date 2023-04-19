@@ -28,6 +28,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', routesUsers);
 app.use('/', routesCards);
+/** app.use('*', (req, res) => {
+  res.status.send({});
+}); */
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
