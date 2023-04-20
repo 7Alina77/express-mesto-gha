@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const handleErrors = require('../errors/handleErrors');
+const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -11,7 +12,7 @@ module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.send({ error: 'Такого пользователя нет' });
+        throw new NotFoundError();
       }
       res.send(user);
       return;
@@ -31,12 +32,16 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError();
+      }
       res.send({
         _id: user._id,
         avatar: user.avatar,
         name,
         about,
       });
+      return;
     })
     .catch(err => handleErrors(err, res));
 };
@@ -45,6 +50,9 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError();
+      }
       res.send({
         _id: user._id,
         avatar,
