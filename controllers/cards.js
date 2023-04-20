@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const { HTTP_STATUS_CREATED } = require('../errors/handleErrors');
 
 module.exports.getCards = (req, res) => {
-  Card.find({ })
+  Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch((err) => handleErrors(err, res));
