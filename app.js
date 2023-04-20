@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/', routesUsers);
+app.use('/users', routesUsers);
 app.use('/', routesCards);
 app.use('*', (req, res) => {
   res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Ошибка URL' });

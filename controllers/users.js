@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const handleErrors = require('../errors/handleErrors');
+const { handleErrors } = require('../errors/handleErrors');
 const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.getUsers = (req, res) => {
@@ -13,8 +13,9 @@ module.exports.getUser = (req, res) => {
     .then((user) => {
       if (!user) {
         throw new NotFoundError();
+      } else {
+        return res.send(user);
       }
-      res.send(user);
     })
     .catch((err) => handleErrors(err, res));
 };
@@ -23,7 +24,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => handleErrors(err, res));
 };
 
@@ -33,13 +34,14 @@ module.exports.updateUser = (req, res) => {
     .then((user) => {
       if (!user) {
         throw new NotFoundError();
+      } else {
+        return res.send({
+          _id: user._id,
+          avatar: user.avatar,
+          name,
+          about,
+        });
       }
-      res.send({
-        _id: user._id,
-        avatar: user.avatar,
-        name,
-        about,
-      });
     })
     .catch((err) => handleErrors(err, res));
 };
@@ -51,7 +53,7 @@ module.exports.updateAvatar = (req, res) => {
       if (!user) {
         throw new NotFoundError();
       }
-      res.send({
+      return res.send({
         _id: user._id,
         avatar,
         name: user.name,

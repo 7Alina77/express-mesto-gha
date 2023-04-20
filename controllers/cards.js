@@ -1,7 +1,7 @@
 const Card = require('../models/card');
-const handleErrors = require('../errors/handleErrors');
 const NotFoundError = require('../errors/NotFoundError');
 const { HTTP_STATUS_CREATED } = require('../errors/handleErrors');
+const {handleErrors} = require('../errors/handleErrors');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res) => {
       if (!card) {
         throw new NotFoundError();
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => handleErrors(err, res));
 };
@@ -42,7 +42,7 @@ module.exports.likeCard = (req, res) => {
       if (!card) {
         throw new NotFoundError();
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => handleErrors(err, res));
 };
@@ -58,7 +58,7 @@ module.exports.dislikeCard = (req, res) => {
       if (!card) {
         throw new NotFoundError();
       }
-      res.send({ data: card });
+      return res.send({ data: card });
     })
     .catch((err) => handleErrors(err, res));
 };
