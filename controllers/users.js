@@ -52,13 +52,14 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => {
       if (!user) {
         throw new NotFoundError();
+      } else {
+        return res.send({
+          _id: user._id,
+          avatar,
+          name: user.name,
+          about: user.about,
+        });
       }
-      return res.send({
-        _id: user._id,
-        avatar,
-        name: user.name,
-        about: user.about,
-      });
     })
     .catch((err) => handleErrors(err, res));
 };
