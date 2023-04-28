@@ -20,13 +20,19 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+  const { _id } = req.params.cardId;
+  Card.findOne(_id)
     .populate('owner')
     .then((card) => {
       if (!card) {
         throw new NotFoundError();
       }
-      return res.send({ data: card });
+      if (card.owner._id.toString() !== req.user._id.toString()) {
+        throw new NotFoundError('Нельзя удалить чужую карточку');
+      }
+      Card.findByIdAndDelete(_id)
+        .populate('owner')
+        .then((cardToDelete) => res.send({ data: cardToDelete }));
     })
     .catch((err) => handleErrors(err, res));
 };

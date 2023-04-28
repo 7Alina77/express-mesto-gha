@@ -10,9 +10,13 @@ const {
   // HTTP_STATUS_UNAUTHORIZED,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_CONFLICT,
 } = http2.constants;
 
 function handleErrors(err, res) {
+  if (err.code === 11000) {
+    return res.status(HTTP_STATUS_CONFLICT).send({ message: 'Пользователь с такой почтой уже существует' });
+  }
   if (err instanceof NotFoundError) {
     return res.status(HTTP_STATUS_NOT_FOUND).send({ message: 'Данные не найдены' });
   }
