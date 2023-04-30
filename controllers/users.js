@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { handleErrors } = require('../errors/handleErrors');
 const NotFoundError = require('../errors/NotFoundError');
+const SECRET_JWT_KEY = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
