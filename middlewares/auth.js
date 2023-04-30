@@ -3,9 +3,8 @@ const { SECRET_JWT_KEY } = require('../utils/constants');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
   const { token } = req.cookies;
-  if (!token /**|| !authorization.startsWith('Bearer')*/) {
+  if (!token) {
     return new UnauthorizedError('Авторизуйтесь');
   }
   let payload;
