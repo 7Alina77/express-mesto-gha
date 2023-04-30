@@ -4,8 +4,6 @@ const User = require('../models/user');
 const { handleErrors } = require('../errors/handleErrors');
 const NotFoundError = require('../errors/NotFoundError');
 
-const SECRET_JWT_KEY = 'b05ac39769e78e4ce23d22b27149508674327458d46957834b0f7dc9a9c7a105';
-
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))

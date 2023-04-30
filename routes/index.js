@@ -4,9 +4,10 @@ const { login, createUser } = require('../controllers/users');
 const userRoutes = require('./users');
 const cardsRoutes = require('./cards');
 const { HTTP_STATUS_NOT_FOUND } = require('../errors/handleErrors');
+const { validateLogin, validateSignUp } = require('../validators/userValidator');
 
-router.post('/signin', login);
-router.post('/signup', createUser);
+router.post('/signin', validateLogin, login);
+router.post('/signup', validateSignUp, createUser);
 
 // router.use(auth);
 
