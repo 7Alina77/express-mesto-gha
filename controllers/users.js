@@ -85,17 +85,17 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ id: user._id }, SECRET_JWT_KEY, { expiresIn: '7d' });
-      res.cookie('jwt', token, {
+      res.cookie('token'/** 'jwt' */, token, {
         maxAge: 3600000,
         httpOnly: true,
         sameSite: true,
       })
         .send({ token });
     })
-    .catch(next);
+    .catch((err) => res.status(401).send({ message: err.message }));
 };
