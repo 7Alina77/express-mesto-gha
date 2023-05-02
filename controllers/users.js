@@ -5,10 +5,10 @@ const NotFoundError = require('../errors/NotFoundError');
 const SECRET_JWT_KEY = require('../utils/constants');
 const handleErrors = require('../errors/handleErrors');
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.getMe = (req, res) => {
@@ -23,15 +23,16 @@ module.exports.getMe = (req, res) => {
     .catch((err) => handleErrors(err, res));
 };
 
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.id)
+module.exports.getUser = (req, res) => {
+  const { _id } = req.params.id;
+  User.findById(_id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Такого пользователя не существует'));
+        throw new NotFoundError('Такого пользователя не существует');
       }
-      return res.send(user);
+      res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.createUser = (req, res) => {
