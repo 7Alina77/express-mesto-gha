@@ -13,7 +13,7 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getMe = (req, res) => {
   const { _id } = req.user;
-  User.find({ _id })
+  User.findById({ _id })
     .then((user) => {
       if (!user) {
         throw new NotFoundError();
