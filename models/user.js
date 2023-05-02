@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const reg = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,7 +19,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator: (url) => reg.test(url),
+      validator: (url) => validator.isUrl(url),
       message: 'Ссылка введена некорректно',
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
