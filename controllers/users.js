@@ -1,39 +1,40 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const handleErrors = require('../errors/handleErrors');
 const NotFoundError = require('../errors/NotFoundError');
 const SECRET_JWT_KEY = require('../utils/constants');
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.getMe = (req, res, next) => {
+module.exports.getMe = (req, res) => {
   const { _id } = req.user;
   User.findById({ _id })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Такого пользователя не существует'));
+        throw new NotFoundError('Такого пользователя не существует');
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Такого пользователя не существует'));
+        throw new NotFoundError('Такого пользователя не существует');
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -45,26 +46,25 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((user) => res.status(200).send(user))
-      .catch(next));
+      .then((user) => res.status(201).send(user))
+      .catch((err) => handleErrors(err, res)));
 };
 
-module.exports.updateUser = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
+module.exports.updateUser = (req, res, userData) => {
+  User.findByIdAndUpdate(req.user._id, userData, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError();
+        throw new NotFoundError('Пользователь не найден');
       } else {
-        return res.send({
+        res.send({
           _id: user._id,
           avatar: user.avatar,
-          name,
-          about,
+          name: user.name,
+          about: user.about,
         });
       }
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.updateAvatar = (req, res, next) => {
