@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const SECRET_JWT_KEY = require('../utils/constants');
+const handleErrors = require('../errors/handleErrors');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -10,16 +11,16 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getMe = (req, res, next) => {
+module.exports.getMe = (req, res) => {
   const { _id } = req.user;
   User.findById({ _id })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Такого пользователя не существует'));
+        throw new NotFoundError('Такого пользователя не существует');
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -33,7 +34,7 @@ module.exports.getUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -46,7 +47,7 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     })
       .then((user) => res.status(201).send(user))
-      .catch(next));
+      .catch((err) => handleErrors(err, res)));
 };
 
 module.exports.updateUser = (req, res, next) => {
