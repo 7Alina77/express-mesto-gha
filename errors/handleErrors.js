@@ -4,6 +4,7 @@ const { CastError, ValidationError } = mongoose.Error;
 const http2 = require('http2');
 const NotFoundError = require('./NotFoundError');
 const UnauthorizedError = require('./UnauthorizedError');
+const ForbiddenError = require('./ForbiddenError');
 
 const {
   HTTP_STATUS_CREATED,
@@ -17,7 +18,9 @@ function handleErrors(err, res) {
   if (err.code === 11000) {
     return res.status(HTTP_STATUS_CONFLICT).send({ message: 'Пользователь с такой почтой уже существует' });
   }
-  if (err instanceof NotFoundError || err instanceof UnauthorizedError) {
+  if (err instanceof NotFoundError
+    || err instanceof UnauthorizedError
+    || err instanceof ForbiddenError) {
     const message = err;
     return res.status(err.statusCode).send({ message });
   }
