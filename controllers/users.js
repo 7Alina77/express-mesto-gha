@@ -18,7 +18,7 @@ module.exports.getMe = (req, res) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя не существует');
       }
-      return res.send(user);
+      res.send(user);
     })
     .catch((err) => handleErrors(err, res));
 };
