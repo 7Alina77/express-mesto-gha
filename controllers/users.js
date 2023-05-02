@@ -50,8 +50,9 @@ module.exports.createUser = (req, res) => {
       .catch((err) => handleErrors(err, res)));
 };
 
-module.exports.updateUser = (req, res, userData) => {
-  User.findByIdAndUpdate(req.user._id, userData, { runValidators: true, new: true })
+module.exports.updateUser = (req, res) => {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
@@ -59,20 +60,20 @@ module.exports.updateUser = (req, res, userData) => {
         res.send({
           _id: user._id,
           avatar: user.avatar,
-          name: user.name,
-          about: user.about,
+          name,
+          about,
         });
       }
     })
     .catch((err) => handleErrors(err, res));
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError();
+        throw new NotFoundError('Пользователь не найден');
       } else {
         return res.send({
           _id: user._id,
@@ -82,10 +83,10 @@ module.exports.updateAvatar = (req, res, next) => {
         });
       }
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -97,5 +98,7 @@ module.exports.login = (req, res, next) => {
       })
         .send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
 };
