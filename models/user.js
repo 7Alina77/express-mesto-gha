@@ -20,9 +20,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator(avatar) {
-        return reg.test(avatar);
-      },
+      validator: (url) => reg.test(url),
       message: 'Ссылка введена некорректно',
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
