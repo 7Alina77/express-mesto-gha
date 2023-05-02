@@ -6,7 +6,7 @@ const SECRET_JWT_KEY = require('../utils/constants');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -28,7 +28,7 @@ module.exports.getUser = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Такого пользователя не существует'));
       }
-      return res.send({ data: user);
+      return res.send(user);
     })
     .catch(next);
 };
@@ -45,7 +45,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((user) => res.status(200).send(user))
+      .then((user) => res.status(201).send(user))
       .catch(next));
 };
 
