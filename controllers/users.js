@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const SECRET_JWT_KEY = require('../utils/constants');
-const handleErrors = require('../errors/handleErrors');
+const { handleErrors } = require('../errors/handleErrors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -51,14 +51,14 @@ module.exports.createUser = (req, res) => {
       .catch((err) => handleErrors(err, res)));
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError();
+        throw new NotFoundError('Такого пользователя нет');
       } else {
-        return res.send({
+        res.send({
           _id: user._id,
           avatar: user.avatar,
           name,
@@ -66,17 +66,17 @@ module.exports.updateUser = (req, res, next) => {
         });
       }
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError();
+        throw new NotFoundError('Такого пользователя нет');
       } else {
-        return res.send({
+        res.send({
           _id: user._id,
           avatar,
           name: user.name,
@@ -84,7 +84,7 @@ module.exports.updateAvatar = (req, res, next) => {
         });
       }
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.login = (req, res) => {
