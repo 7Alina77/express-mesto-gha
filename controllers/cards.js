@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const NotFoundError = require('../errors/NotFoundError');
+const { NotFoundError } = require('../errors/NotFoundError');
 const { HTTP_STATUS_CREATED } = require('../errors/handleErrors');
 const { handleErrors } = require('../errors/handleErrors');
 
@@ -20,17 +20,17 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { _id } = req.params.cardId;
-  Card.findOne(_id)
+  const _id = req.params.cardId;
+  Card.findOne({ _id })
     .populate('owner')
     .then((card) => {
       if (!card) {
-        throw new NotFoundError();
+        throw new NotFoundError('Такой карточки нет');
       }
       if (card.owner._id.toString() !== req.user._id.toString()) {
         throw new NotFoundError('Нельзя удалить чужую карточку');
       }
-      Card.findByIdAndDelete(_id)
+      Card.findByIdAndDelete({ _id })
         .populate('owner')
         .then((cardToDelete) => res.send({ data: cardToDelete }));
     })
@@ -51,9 +51,9 @@ module.exports.likeCard = (req, res) => {
     })
     .then((card) => {
       if (!card) {
-        throw new NotFoundError();
+        throw new NotFoundError('Такая карточка не найдена');
       } else {
-        return res.send({ data: card });
+        res.send({ data: card });
       }
     })
     .catch((err) => handleErrors(err, res));
@@ -73,9 +73,9 @@ module.exports.dislikeCard = (req, res) => {
     })
     .then((card) => {
       if (!card) {
-        throw new NotFoundError();
+        throw new NotFoundError('Такая карточка не найдена');
       } else {
-        return res.send({ data: card });
+        res.send({ data: card });
       }
     })
     .catch((err) => handleErrors(err, res));
