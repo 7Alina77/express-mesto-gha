@@ -15,6 +15,7 @@ const {
 } = http2.constants;
 
 function handleErrors(err, req, res, next) {
+  console.log(err);
   if (err.code === 11000) {
     return res.status(HTTP_STATUS_CONFLICT).send({ message: 'Пользователь с такой почтой уже существует' });
   }
