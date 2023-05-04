@@ -20,8 +20,8 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const _id = req.params.cardId;
-  Card.findOne({ _id })
+  const { _id } = req.params.cardId;
+  Card.findOne(_id)
     .populate('owner')
     .then((card) => {
       if (!card) {
@@ -30,7 +30,7 @@ module.exports.deleteCard = (req, res) => {
       if (card.owner._id.toString() !== req.user._id.toString()) {
         throw new NotFoundError('Нельзя удалить чужую карточку');
       }
-      Card.findByIdAndDelete({ _id })
+      Card.findByIdAndDelete(_id)
         .populate('owner')
         .then((cardToDelete) => res.send({ data: cardToDelete }));
     })
@@ -50,10 +50,10 @@ module.exports.likeCard = (req, res) => {
       return card;
     })
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Такая карточка не найдена');
-      } else {
+      if (card) {
         res.send({ data: card });
+      } else {
+        throw new NotFoundError('Такая карточка не найдена');
       }
     })
     .catch((err) => handleErrors(err, res));
