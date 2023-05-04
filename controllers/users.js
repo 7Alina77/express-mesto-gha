@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const { SECRET_JWT_KEY } = require('../utils/constants');
-const { handleErrors } = require('../errors/handleErrors');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -11,7 +10,7 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getMe = (req, res) => {
+module.exports.getMe = (req, res, next) => {
   User.findById(req.user.id)
     .then((user) => {
       if (!user) {
@@ -19,10 +18,10 @@ module.exports.getMe = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
@@ -30,10 +29,10 @@ module.exports.getUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -46,7 +45,7 @@ module.exports.createUser = (req, res) => {
       password: hash,
     })
       .then((user) => res.status(201).send(user))
-      .catch((err) => handleErrors(err, res)));
+      .catch(next));
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -85,7 +84,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -97,5 +96,5 @@ module.exports.login = (req, res) => {
       })
         .send({ token });
     })
-    .catch((err) => res.status(401).send({ message: err.message }));
+    .catch(next);
 };

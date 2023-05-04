@@ -14,20 +14,20 @@ const {
   HTTP_STATUS_CONFLICT,
 } = http2.constants;
 
-function handleErrors(err, res) {
+function handleErrors(err, req, res, next) {
   if (err.code === 11000) {
     return res.status(HTTP_STATUS_CONFLICT).send({ message: 'Пользователь с такой почтой уже существует' });
   }
   if (err instanceof NotFoundError
     || err instanceof UnauthorizedError
     || err instanceof ForbiddenError) {
-    console.log(err);
     return res.status(err.statusCode).send({ message: err.message });
   }
   if (err instanceof CastError || err instanceof ValidationError) {
     return res.status(HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректные данные' });
   }
-  return res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+  res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+  return next();
 }
 
 module.exports = {
