@@ -15,9 +15,9 @@ router.use(auth);
 router.use('/users', userRoutes);
 router.use('/cards', cardsRoutes);
 
-router.use('*', (req, res) => {
+router.use('*', (err, req, res, next) => {
   const newNotFoundError = new NotFoundError('Нет данных');
-  handleErrors(newNotFoundError, res);
+  handleErrors(newNotFoundError, req, res, next);
 });
 
 module.exports = router;
