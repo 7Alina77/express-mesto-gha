@@ -3,38 +3,36 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const { SECRET_JWT_KEY } = require('../utils/constants');
-const { handleErrors } = require('../errors/handleErrors');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.getMe = (req, res) => {
-  const { _id } = req.user;
-  User.findById({ _id })
+module.exports.getMe = (req, res, next) => {
+  User.findById(req.user.id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя не существует');
       }
       return res.send(user);
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
-  User.findById(req.params.userId)
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя не существует');
       }
       return res.send(user);
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -47,12 +45,12 @@ module.exports.createUser = (req, res) => {
       password: hash,
     })
       .then((user) => res.status(201).send(user))
-      .catch((err) => handleErrors(err, res)));
+      .catch(next));
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(req.user.id, { name, about }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя нет');
@@ -65,12 +63,12 @@ module.exports.updateUser = (req, res) => {
         });
       }
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true })
+  User.findByIdAndUpdate(req.user.id, { avatar }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя нет');
@@ -83,7 +81,7 @@ module.exports.updateAvatar = (req, res) => {
         });
       }
     })
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {

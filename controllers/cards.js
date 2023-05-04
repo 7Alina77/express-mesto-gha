@@ -20,8 +20,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { _id } = req.params.cardId;
-  Card.findOne(_id)
+  Card.findById(req.params.cardId)
     .populate('owner')
     .then((card) => {
       if (!card) {
@@ -30,7 +29,7 @@ module.exports.deleteCard = (req, res) => {
       if (card.owner._id.toString() !== req.user._id.toString()) {
         throw new NotFoundError('Нельзя удалить чужую карточку');
       }
-      Card.findByIdAndDelete(_id)
+      Card.findByIdAndDelete(req.params.cardId)
         .populate('owner')
         .then((cardToDelete) => res.send({ data: cardToDelete }));
     })
