@@ -21,6 +21,7 @@ function handleErrors(err, res) {
   if (err instanceof NotFoundError
     || err instanceof UnauthorizedError
     || err instanceof ForbiddenError) {
+    console.log(err);
     return res.status(err.statusCode).send({ message: err.message });
   }
   if (err instanceof CastError || err instanceof ValidationError) {
