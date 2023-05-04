@@ -11,7 +11,7 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getMe = (req, res, next) => {
+module.exports.getMe = (req, res) => {
   User.findById(req.user.id)
     .then((user) => {
       if (!user) {
@@ -19,10 +19,10 @@ module.exports.getMe = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
@@ -30,7 +30,7 @@ module.exports.getUser = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch(next);
+    .catch((err) => handleErrors(err, res));
 };
 
 module.exports.createUser = (req, res) => {

@@ -3,20 +3,20 @@ const NotFoundError = require('../errors/NotFoundError');
 const { HTTP_STATUS_CREATED } = require('../errors/handleErrors');
 const { handleErrors } = require('../errors/handleErrors');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
-    .catch((err) => handleErrors(err, res));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
-  const ownerId = (req.user._id);
+module.exports.createCard = (req, res, next) => {
+  const ownerId = req.user.id;
   const { name, link } = req.body;
   Card.create({ name, link, owner: ownerId })
     .then((card) => card.populate('owner'))
-    .then((card) => res.status(HTTP_STATUS_CREATED).send({ data: card }))
-    .catch((err) => handleErrors(err, res));
+    .then((card) => res.status(HTTP_STATUS_CREATED).send(card))
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res) => {
       if (!card) {
         throw new NotFoundError('Такой карточки нет');
       }
-      if (card.owner._id.toString() !== req.user._id.toString()) {
+      if (card.owner._id.toString() !== req.user.id.toString()) {
         throw new NotFoundError('Нельзя удалить чужую карточку');
       }
       Card.findByIdAndDelete(req.params.cardId)
@@ -39,7 +39,7 @@ module.exports.deleteCard = (req, res) => {
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user.id } },
     { new: true },
   )
     .then((card) => {
@@ -61,7 +61,7 @@ module.exports.likeCard = (req, res) => {
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: req.user.id } },
     { new: true },
   )
     .then((card) => {

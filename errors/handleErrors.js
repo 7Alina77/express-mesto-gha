@@ -21,8 +21,7 @@ function handleErrors(err, res) {
   if (err instanceof NotFoundError
     || err instanceof UnauthorizedError
     || err instanceof ForbiddenError) {
-    const { message } = err.message;
-    return res.status(err.statusCode).send({ message });
+    return res.status(err.statusCode).send({ message: err.message });
   }
   if (err instanceof CastError || err instanceof ValidationError) {
     return res.status(HTTP_STATUS_BAD_REQUEST).send({ message: 'Некорректные данные' });
