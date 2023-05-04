@@ -18,19 +18,18 @@ module.exports.getMe = (req, res) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя не существует');
       }
-      res.send(user);
+      return res.send(user);
     })
     .catch((err) => handleErrors(err, res));
 };
 
 module.exports.getUser = (req, res) => {
-  const { _id } = req.params.id;
-  User.findById(_id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя не существует');
       }
-      res.send(user);
+      return res.send(user);
     })
     .catch((err) => handleErrors(err, res));
 };
