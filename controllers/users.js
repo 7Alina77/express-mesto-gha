@@ -57,7 +57,7 @@ module.exports.updateUser = (req, res) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя нет');
       } else {
-        res.send({
+        return res.send({
           _id: user._id,
           avatar: user.avatar,
           name,
@@ -75,7 +75,7 @@ module.exports.updateAvatar = (req, res) => {
       if (!user) {
         throw new NotFoundError('Такого пользователя нет');
       } else {
-        res.send({
+        return res.send({
           _id: user._id,
           avatar,
           name: user.name,
