@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const { reg } = require('../utils/constants');
+const { regExLink } = require('../utils/constants');
 
 module.exports.validateUserById = celebrate({
   params: Joi.object().keys({
@@ -9,14 +9,14 @@ module.exports.validateUserById = celebrate({
 
 module.exports.validateUser = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
 });
 
 module.exports.validateUserAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(reg),
+    avatar: Joi.string().required().pattern(regExLink),
   }),
 });
 
@@ -33,6 +33,6 @@ module.exports.validateSignUp = celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(reg),
+    avatar: Joi.string().pattern(regExLink),
   }),
 });

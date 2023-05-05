@@ -1,10 +1,10 @@
 const { celebrate, Joi } = require('celebrate');
-const { reg } = require('../utils/constants');
+const { regExLink } = require('../utils/constants');
 
 module.exports.validateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(reg),
+    link: Joi.string().required().pattern(regExLink),
   }),
 });
 
